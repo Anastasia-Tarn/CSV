@@ -28,7 +28,7 @@ public class Main {
         String fileName = "data.csv";
         String fileName2 = "data.xml";
         writeString(listToJson(parseCSV(columnMapping, fileName)), "data.json");
-        parseXML(fileName2);
+        writeString(listToJson(parseXML(fileName2)), "data2.json");
 
     }
 
@@ -72,40 +72,16 @@ public class Main {
     public static List<Employee> parseXML (String path) {
         List<Employee> staff = new ArrayList<>();
         try {
-            File file = new File(path);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(file);
-            Node root = doc.getFirstChild();
-            NodeList nodelist = root.getChildNodes();
+            Document doc = builder.parse(new File(path));
+            NodeList nodelist = doc.getElementsByTagName("employee");
             for (int i = 0; i < nodelist.getLength(); i++) {
-                Node n = nodelist.item(i);
-                NodeList elementChild = n.getChildNodes();
-                long id = 0;
-                String firstName = null;
-                String lastName = null;
-                String country = null;
-                int age = 0;
-                for (int j = 0; j < elementChild.getLength(); j++) {
-                    Node child = nodelist.item(j);
-                    switch (child.getNodeName()) {
-                        case "id": {
-                            id = Long.valueOf(child.getTextContent());
-                        }
-                        case "firstName": {
-                            firstName = child.getTextContent();
-                        }
-                        case "lastName": {
-                            lastName = child.getTextContent();
-                        }
-                        case "country": {
-                            country = child.getTextContent();
-                        }
-                        case "age": {
-                            age = Integer.valueOf(child.getTextContent());
-                        }
-                    }
-                }
+                Long id = Long.parseLong(doc.getElementsByTagName("id").item(i).getTextContent());
+                String firstName = doc.getElementsByTagName("firstName").item(i).getTextContent();
+                String lastName = doc.getElementsByTagName("lastName").item(i).getTextContent();
+                String country = doc.getElementsByTagName("country").item(i).getTextContent();
+                int age = Integer.parseInt(doc.getElementsByTagName("age").item(i).getTextContent());
                 Employee employee = new Employee(id, firstName, lastName, country, age);
                 staff.add(employee);
             }
